@@ -9,7 +9,7 @@
     android:focusable="true"
     app:cardCornerRadius="15dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground">
@@ -18,48 +18,40 @@
             android:id="@+id/todo_done_check_box"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             android:checked="false" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/todo_done_check_box"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/todo"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Title"
                 android:textSize="24dp" />
 
             <TextView
                 android:id="@+id/create_date"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8sp"
+                android:text="yyyy-mm-dd"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/done_date"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="8sp"
                 android:text="yyyy-mm-dd"
                 android:textSize="12dp" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/important_todo"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:src="@drawable/ic_baseline_star_outline_24" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>
