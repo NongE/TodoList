@@ -1,17 +1,20 @@
 package com.project.todolist.adaptor.todo
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.project.todolist.R
-import com.project.todolist.adaptor.data.Section
+import com.project.todolist.activity.DoneActivity
+import com.project.todolist.activity.ImportantActivity
 import com.project.todolist.database.todo.TodoListEntity
+import com.project.todolist.databinding.ItemFocusBinding
 import com.project.todolist.databinding.ItemTodoBinding
 
-class TodoListAdaptor: RecyclerView.Adapter<TodoListAdaptor.TodoListViewHolder>() {
+class TodoListAdaptor : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var todoList: List<TodoListEntity> = listOf()
+    private var todoList: List<Any> = listOf()
 
     private lateinit var onItemCheckBoxClickListener: OnItemCheckBoxClickListener
     private lateinit var onItemStarClickListener: OnItemStarClickListener
@@ -41,16 +44,48 @@ class TodoListAdaptor: RecyclerView.Adapter<TodoListAdaptor.TodoListViewHolder>(
         this.onItemClickListener = onItemClickListener
     }
 
-    fun setTodoList(todoList: List<TodoListEntity>) {
-        this.todoList = todoList
+    fun setTodoList(todoList: List<TodoListEntity>, isFocus: Boolean) {
+        when (isFocus) {
+            true -> this.todoList = listOf("중요", "완료 한 일") + todoList
+            false -> this.todoList = todoList
+        }
         notifyDataSetChanged()
     }
 
-    inner class TodoListViewHolder(private val binding: ItemTodoBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class FocusViewHolder(private val binding: ItemFocusBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         init {
             itemView.setOnClickListener {
-                onItemClickListener.onCheck(it, todoList[adapterPosition])
+                if (adapterPosition == 1) {
+                    val intent = Intent(it.context, DoneActivity::class.java)
+                    it.context.startActivity(intent)
+                } else {
+                    val intent = Intent(it.context, ImportantActivity::class.java)
+                    it.context.startActivity(intent)
+                }
+            }
+        }
+
+        fun bind(title: String) {
+            binding.todo.text = title
+            when (title) {
+                "중요" -> {
+                    binding.img.setImageResource(R.drawable.ic_baseline_star_outline_24)
+                }
+                else -> {
+                    binding.img.setImageResource(R.drawable.ic_baseline_todo_done_24)
+                }
+            }
+        }
+    }
+
+    inner class TodoListViewHolder(private val binding: ItemTodoBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            itemView.setOnClickListener {
+                onItemClickListener.onCheck(it, todoList[adapterPosition] as TodoListEntity)
             }
         }
 
@@ -58,9 +93,9 @@ class TodoListAdaptor: RecyclerView.Adapter<TodoListAdaptor.TodoListViewHolder>(
             binding.todo.text = todoListEntity.todo
             binding.createDate.text = todoListEntity.createDate
 
-            if (todoListEntity.isImportant){
+            if (todoListEntity.isImportant) {
                 binding.importantTodo.setImageResource(R.drawable.ic_baseline_star_24)
-            }else{
+            } else {
                 binding.importantTodo.setImageResource(R.drawable.ic_baseline_star_outline_24)
             }
 
@@ -70,26 +105,28 @@ class TodoListAdaptor: RecyclerView.Adapter<TodoListAdaptor.TodoListViewHolder>(
 
             binding.importantTodo.setOnClickListener {
                 onItemStarClickListener.onCheck(it, todoListEntity)
-                if (todoListEntity.isImportant){
+                if (todoListEntity.isImportant) {
                     binding.importantTodo.setImageResource(R.drawable.ic_baseline_star_24)
-                }else{
+                } else {
                     binding.importantTodo.setImageResource(R.drawable.ic_baseline_star_outline_24)
                 }
             }
         }
 
-        fun getBinding(): ItemTodoBinding{
+        fun getBinding(): ItemTodoBinding {
             return binding
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return todoList[position].type
+        return if (todoList[position] is TodoListEntity) 1 else 0
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoListViewHolder {
-        return TodoListViewHolder(
-                    ItemTodoBinding.inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        when (viewType) {
+            0 -> {
+                return FocusViewHolder(
+                    ItemFocusBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
@@ -97,14 +134,44 @@ class TodoListAdaptor: RecyclerView.Adapter<TodoListAdaptor.TodoListViewHolder>(
                 )
             }
 
-    override fun onBindViewHolder(holder: TodoListViewHolder, position: Int) {
-        holder.bind(todoList[position])
+            else -> {
+                return TodoListViewHolder(
+                    ItemTodoBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
+            }
+        }
     }
 
-    override fun onViewRecycled(holder: TodoListViewHolder) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder.itemViewType) {
+            0 -> {
+                (holder as FocusViewHolder).bind(todoList[position] as String)
+            }
+
+            else -> {
+                (holder as TodoListViewHolder).bind(todoList[position] as TodoListEntity)
+            }
+        }
+
+    }
+
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
-        holder.getBinding().todoDoneCheckBox.isChecked = false
-        holder.getBinding().importantTodo.setImageResource(R.drawable.ic_baseline_star_outline_24)
+
+        when (holder.itemViewType) {
+            0 -> {
+
+            }
+
+            else -> {
+                (holder as TodoListViewHolder).getBinding().todoDoneCheckBox.isChecked = false
+                (holder as TodoListViewHolder).getBinding().importantTodo.setImageResource(R.drawable.ic_baseline_star_outline_24)
+            }
+        }
     }
 
     override fun getItemCount(): Int {

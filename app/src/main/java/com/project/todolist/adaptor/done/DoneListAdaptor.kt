@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.project.todolist.R
-import com.project.todolist.adaptor.data.Section
 import com.project.todolist.adaptor.todo.TodoListAdaptor
 import com.project.todolist.database.done.DoneListEntity
 import com.project.todolist.database.todo.TodoListEntity

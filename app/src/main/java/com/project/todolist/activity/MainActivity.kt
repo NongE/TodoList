@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.project.todolist.adaptor.todo.SectionAdaptor
 import com.project.todolist.adaptor.todo.TodoListAdaptor
 import com.project.todolist.database.done.DoneListEntity
 import com.project.todolist.database.todo.TodoListEntity
@@ -22,7 +21,7 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var adapter: SectionAdaptor
+    private lateinit var adapter: TodoListAdaptor
 
     private val todoListViewModel: TodoListViewModel by lazy {
         ViewModelProvider(this, TodoListViewModelFactory(this)).get(TodoListViewModel::class.java)
@@ -37,13 +36,13 @@ class MainActivity : AppCompatActivity() {
         initClickListener()
 
         todoListViewModel.getAllTodoList().observe(this, Observer {
-            adapter.setSection(it)
+            adapter.setTodoList(it, true)
             binding.todoList.smoothScrollToPosition(0)
         })
     }
 
     private fun initTodoList() {
-        adapter = SectionAdaptor().apply {
+        adapter = TodoListAdaptor().apply {
 
             setOnItemClickListener(object : TodoListAdaptor.OnItemClickListener {
                 override fun onCheck(v: View, todoListEntity: TodoListEntity) {
@@ -123,7 +122,6 @@ class MainActivity : AppCompatActivity() {
                 todoListViewModel.insertTodo(
                     TodoListEntity(
                         0,
-                        1,
                         false,
                         dialogBinding.todoTitle.text.toString(),
                         Date().toString()

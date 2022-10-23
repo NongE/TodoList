@@ -86,7 +86,7 @@ class ImportantActivity : AppCompatActivity() {
         binding.todoList.layoutManager = LinearLayoutManager(this)
 
         todoListViewModel.getAllImportantTodoList().observe(this, Observer {
-            adapter.setTodoList(it)
+            adapter.setTodoList(it, false)
         })
     }
 
